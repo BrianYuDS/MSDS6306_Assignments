@@ -1,0 +1,151 @@
+---
+title: "Homework3"
+author: "Brian Yu"
+date: "October 12, 2016"
+output: html_document
+---
+
+```{r}
+sessionInfo()
+```
+#### Use R to do each of the following. Use R code instructions that are a general as possible, and also as efficient as possible.
+
+##### 1. Using the `testdata` data vector you created for Lecture 1 practice problems:
+  45.4  44.2  36.8  35.1  39.0  60.0  47.4  41.1  45.8  35.6
+
+1a. Use logical referencing to calculate the standard deviation of only those values that are less than 45.
+```{r}
+testdata <- c(45.4, 44.2, 36.8, 35.1, 39.0, 60.0, 47.4, 41.1, 45.8, 35.6)
+# Display contests in testdata
+testdata
+sortHL.testdata <- sort(testdata, decreasing = TRUE)
+sortHL.testdata
+stdevLT45.testdata <- sd(sortHL.testdata[-c(1, 2, 3, 4)])
+stdevLT45.testdata
+```
+
+1b. Write an R command that will determine how many vector entries are less than 45. Display the command and its output
+```{r}
+sum(testdata < 45)
+```
+
+1c. Write an R command that will determine how many vector entries are greater than 40 but less than 55. Display the command and its output.
+```{r}
+sum(testdata > 40 & testdata < 55)
+```
+
+1d. Write an R command that will calculate what proportion of the data vector has values exceeding 40.
+```{r}
+length(which(testdata > 40)) / length(testdata)
+```
+
+
+##### 2. This exercise uses a file called `cigsales.txt` that contains state-level data regarding cigarette sales and other variables. The data set is available from the Unit Overview page for this unit. Use `read.table` to import this data set as a data frame in R.
+
+2a. The variable `black` indicates the percentage of a given state that is African-American. Using logical referencing, select from this data frame only those states that have over a 15% African-American population. What states get selected?
+```{r}
+# Import data set as data frame
+cigdata = read.table("cigsales.txt", header = TRUE)
+cigdata # Displaying data
+cigdata.black.GT15 <- subset(cigdata, black > 15.0)
+cigdata.black.GT15 # States with greater than 15% African-American population
+```
+
+2b. Extract the variable `price` from this data frame, and place it into a vector of its own called `price.vec`.
+```{r}
+price.vec <- (cigdata$price)
+class(price.vec) # Verifying it's a vector
+price.vec # Display vector price.vec
+```
+
+2c. Use logical referencing to create two separate vectors in R: A vector called poor containing only the income values that fall below the median income value for all the states; and a vector called rich containing only the income values that fall above the median income value for all the states.
+```{r}
+income.vec <- (cigdata$income) # Extract out income column from cigdata data frame
+income.vec # Display vector income.vec
+poor <- income.vec[income.vec < median(income.vec)] # Create vector poor
+poor # Display vector poor
+rich <- income.vec[income.vec > median(income.vec)] # Create vector rich
+rich # Display vector rich
+```
+
+##### 3. Run the R code examples below and write a brief statement about what each example does
+
+3a. Example 1:
+```{r}
+trim <- function(x, lower = 0.0, upper = 1.0) {
+  indicies <- x >= lower & x <= upper
+  return(x[indicies])
+}
+
+x <- sort(rnorm(20)) # Create new vector x
+x # Display vector x
+y <- trim(x) # Create new vector y utilizing trim function
+y # Display vector y
+
+    # This function trims off the values of the argument x that are above or below the
+    # arguments lower (0.0) and upper limit (1.0)
+```
+
+3b. Example 2:
+```{r}
+trim2 <- function(x, lower = 0.0, upper = 1.0) x[x >= lower & x <= upper]
+
+y2 <- trim2(x)
+y2
+
+    # This function does the same action as Example 1 without a return statement. The
+    # function returns the value of the last expression if there is no return.
+```
+
+3c. Example 3:
+```{r}
+sumdice <- function(n) {
+  k <- sample(1:6, size=n, replace = TRUE)
+  return(sum(k))
+}
+
+sumdice(1) # The sumdice function, n is the number of dice to roll and add
+```
+
+##### 4. On average, how many dots would you expect to see when you roll a fair six-sided die? How can you use the function `sumdice()` to get a reliable estimate of the average ("expected") number of dots?
+```{r}
+mean(replicate(100000, sumdice(1)))
+    # On average, approximately 3.5 dots is expected. To yield this result, I used
+    # sumdice() as a subfunction of the replicate function with 100,000 rolls, which was 
+    # a subfunction of the mean function.
+```
+
+##### 5. Examine the following piece of R code. What is the difference between the variable x and the variable y? (Note: I am not asking for a number. I am asking for the difference in how they function within the code below. Write your answer in sentence form).
+```{r}
+x <- 42
+fred <- function(y) {
+  x <- y
+  return(y + x)
+}
+fred(13)
+x
+    # Inside the function, x is a local variable that is defined to be the value of y.
+    # However, outside the function,x is unchanged. For example, if you use the function
+    # fred(13), this means the local variable x is 13 since it is defined to be the value
+    # of y, which is 13, thus the return statement is (13 + 13) = 26. However, the x
+    # variable outside the function is unchanged at 42.
+```
+
+##### 6. Create an R function `diff()` that calculates the absolute difference between the mean and median of a sample of values stored in a vector. Then, run your function on the `price.vec` vector from part 2b.
+```{r}
+diff <- function(z) {
+  k <- abs(median(z) - mean(z))
+  return(k)
+}
+diff(price.vec) # Running diff() function on vector price.vec
+```
+
+##### 7. Here is a very simple loop in R. Run this code and tell me what it does:
+```{r}
+for (i in 1:20) {
+  print(i + 3)
+}
+    # This for loop takes an argument i, which is a vector from 1 through 20 and 
+    # prints out the results by adding +3 to every value from 1 through 20.
+```
+
