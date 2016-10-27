@@ -1,0 +1,117 @@
+---
+title: "BYu_Homework4"
+author: "Brian Yu"
+date: "October 26, 2016"
+output: 
+  html_document:
+    keep_md: true
+---
+# Introduction
+For Homework 4, we were asked to write a boostrap code to illustrate the central limit theorem
+utilizing a normal distribution with two different sample sizes and an exponential distribution
+with two different sample sizes. Let's begin by defining the key concepts in this assignment: The Central Limit Theorem and Bootstrapping.
+
+What is the central limit theorem? From "http://www.math.uah.edu/stat/sample/CLT.html", The central limit theorem states that the distribution of the sum (or average) of a large number of independent, identically distributed variables will be approximately normal, regardless of the underlying distribution. The importance of the central limit theorem is hard to overstate; indeed it is the reason that many statistical procedures work.
+
+What is bootstrapping? From "https://en.wikipedia.org/wiki/Bootstrapping_(statistics)", bootstrapping can refer to any test or metric that relies on random sampling with replacement. Bootstrapping allows assigning measures of accuracy (defined in terms of bias, variance, confidence intervals, prediction error or some other such measure) to sample estimates. This technique allows estimation of the sampling distribution of almost any statistic using random sampling methods. Generally, it falls in the broader class of resampling methods.
+
+For this assignment, I've taken sample sizes of 10 and 100 from both normal and exponential distributions. Furthermore, I conducted the bootstrap sampling through a bootstrap for loop to produce bootstrap mean values. The code is below with detailed comments per each step of the code. 
+
+# Main R Code
+```{r}
+## Define two random normal distributions with two different samples sizes
+norm10  <- rnorm(10, mean = 0, sd = 5)  # Small sample size
+norm100 <- rnorm(100, mean = 0, sd = 5) # Larger sample size
+
+## Define two random exponential distributions with two different sample sizes
+exp10   <- rexp(10)  # small sample size
+exp100  <- rexp(100) # large sample size
+
+## Define nsim which is the number of simulation runs
+nsim <- 1000
+
+## Initializating and defining bootstrap vectors that are going to hold all 
+## the 1000 means for each random generation. Vector are numiric with length nsim
+bootnorm10mean  <- numeric(nsim)
+bootnorm100mean <- numeric(nsim)
+bootexp10mean   <- numeric(nsim)
+bootexp100mean  <- numeric(nsim)
+
+## This is the bootstrapping for loop that generates 1000 bootstrap means.
+## For bootnorm1, this loop is going to generate a new sample of size 10 from the
+## random normal generation and get the mean of that random normal sample size of 10
+## and place it in the vector bootnorm1. This concept is repeated for the other 
+## distributions and sample sizes.
+for (i in 1:nsim) {
+  bootnorm10  <- sample(norm10, size = length(norm10), replace = TRUE)
+  bootnorm100 <- sample(norm100, size = length(norm100), replace = TRUE)
+  bootexp10   <- sample(exp10, size = length(exp10), replace = TRUE)
+  bootexp100  <- sample(exp100, size = length(exp100), replace = TRUE)
+  
+  bootnorm10mean[i] <- mean(bootnorm10)
+  bootnorm100mean[i]<- mean(bootnorm100)
+  bootexp10mean[i]  <- mean(bootexp10)
+  bootexp100mean[i] <- mean(bootexp100)
+}
+```
+
+### Output of Summary Statistics
+From the summary statisitcs, you can see the original samples have wider spreads and variance compared to the bootstrapped data, indicated from the larger  IQRs. For bootstrapping, the original data is treated as the population, thus the bootstrapping is taking 1000 replications from this population and calculating the mean of the samples, which is expected to be near the original data mean. This is validated by looking at the outputted means from the summary statistic, which are approximately equal. 
+
+* For sample size 10: Random normal and Bootstrap normal summary statistics, respectively
+```{r echo = FALSE}
+## For sample size 10: Random normal vs Bootstrap normal summary statistics
+summary(norm10)
+summary(bootnorm10mean)
+```
+
+* For sample size 100: Random normal and Bootstrap normal summary statistics, respectively
+```{r echo = FALSE}
+## For sample size 100: Random normal vs Bootstrap normal summary statistics
+summary(norm100)
+summary(bootnorm100mean)
+```
+
+* For sample size 10: Random exponential and Bootstrap exponential summary statistics, respectively
+```{r echo = FALSE}
+## For sample size 10: Random exponential vs Bootstrap exponential summary statistics
+summary(exp10)
+summary(bootexp10mean)
+```
+
+* For sample size 100: Random exponential and Bootstrap exponential summary statistics, respectively
+```{r echo = FALSE}
+## For sample size 100: Random exponential vs Bootstrap exponential summary statistics
+summary(exp100)
+summary(bootexp100mean)
+```
+
+
+### Outputs of Normal Distribution Histograms
+```{r echo = FALSE}
+## Histogram outputs for random normal distribution & Bootstrapped normal for samples 10 & 100
+par(mfrow = c(2,2))
+hist(norm10, main = "Random Normal Sample Size 10")
+hist(bootnorm10mean, main = "Bootstrap Normal Sample Size 10")
+hist(norm100, main = "Random Normal Sample Size 100")
+hist(bootnorm100mean, main = "Bootstrap Normal Sample Size 100")
+```
+
+### Outputs of Exponential Distribution Histograms
+```{r echo = FALSE}
+## Histogram outputs for random exponential distribution & Bootstrapped exponential for samples 10 & 100
+par(mfrow = c(2,2))
+hist(exp10, main = "Random Exponential Sample Size 10")
+hist(bootexp10mean, main = "Bootstrap Exponential Sample Size 10")
+hist(exp100, main = "Random Exponential Sample Size 100")
+hist(bootexp100mean, main = "Bootstrap Exponential Sample Size 100")
+```
+
+# Conclusion
+From the histogram outputs, you can clearly notice that the bootstrapped data is more normally distributed than the original data. This is evidentlly more noticeable for the exponential distribution samples. In additiona from the histogram output, the bootstrapped data has a smaller variance and standard deviation compared to the original data. In closing, you can see The Central Limit Theorem in action from utilization of bootstrapping on randomized sample sizes of 10 and 100 for both normal and exponetial distribution data. 
+
+
+
+```{r echo = FALSE}
+sessionInfo()
+```
